@@ -647,4 +647,60 @@ document.addEventListener('DOMContentLoaded', () => {
     window.finTrack = finTrack;
     window.updateDashboard = () => finTrack.updateDashboard();
     window.updateTransactionsTable = () => finTrack.updateTransactionsTable();
+
+});
+
+// Di dalam setupEventListeners() di app.js, tambahkan:
+
+// Event delegation untuk transaction actions
+document.addEventListener('click', (e) => {
+    console.log('Click event target:', e.target);
+    
+    // Edit transaction
+    const editBtn = e.target.closest('.edit-transaction-btn');
+    if (editBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const transactionId = editBtn.dataset.id;
+        console.log('Edit transaction clicked:', transactionId);
+        this.editTransaction(transactionId);
+        return;
+    }
+    
+    // Delete transaction
+    const deleteBtn = e.target.closest('.delete-transaction-btn');
+    if (deleteBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const transactionId = deleteBtn.dataset.id;
+        console.log('Delete transaction clicked:', transactionId);
+        this.confirmDeleteTransaction(transactionId);
+        return;
+    }
+    
+    // Edit wallet (duplicate from wallet.js for safety)
+    const editWalletBtn = e.target.closest('.edit-wallet-btn');
+    if (editWalletBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const walletId = editWalletBtn.dataset.walletId;
+        console.log('Edit wallet clicked from app.js:', walletId);
+        if (typeof WalletManager !== 'undefined') {
+            WalletManager.editWallet(walletId);
+        }
+        return;
+    }
+    
+    // Delete wallet (duplicate from wallet.js for safety)
+    const deleteWalletBtn = e.target.closest('.delete-wallet-btn');
+    if (deleteWalletBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const walletId = deleteWalletBtn.dataset.walletId;
+        console.log('Delete wallet clicked from app.js:', walletId);
+        if (typeof WalletManager !== 'undefined') {
+            WalletManager.confirmDeleteWallet(walletId);
+        }
+        return;
+    }
 });
