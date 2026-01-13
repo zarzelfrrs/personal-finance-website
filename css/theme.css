@@ -1,0 +1,312 @@
+/* Light Theme */
+:root {
+    /* Colors */
+    --primary-color: #4f46e5;
+    --primary-dark: #4338ca;
+    --primary-light: #818cf8;
+    --secondary-color: #10b981;
+    --secondary-dark: #059669;
+    --danger-color: #ef4444;
+    --danger-dark: #dc2626;
+    --warning-color: #f59e0b;
+    --warning-dark: #d97706;
+    --success-color: #10b981;
+    --success-dark: #059669;
+    --info-color: #06b6d4;
+    --info-dark: #0891b2;
+    
+    /* Backgrounds */
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --sidebar-bg: #ffffff;
+    
+    /* Text */
+    --text-color: #1e293b;
+    --text-secondary: #64748b;
+    --text-light: #94a3b8;
+    
+    /* Borders */
+    --border-color: #e2e8f0;
+    --border-light: #f1f5f9;
+    
+    /* States */
+    --hover-color: rgba(99, 102, 241, 0.05);
+    --active-color: rgba(99, 102, 241, 0.1);
+    
+    /* RGB values for rgba() */
+    --primary-rgb: 79, 70, 229;
+    --success-rgb: 16, 185, 129;
+    --danger-rgb: 239, 68, 68;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+    /* Colors */
+    --primary-color: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #a5b4fc;
+    --secondary-color: #10b981;
+    --secondary-dark: #059669;
+    --danger-color: #f87171;
+    --danger-dark: #ef4444;
+    --warning-color: #fbbf24;
+    --warning-dark: #f59e0b;
+    --success-color: #10b981;
+    --success-dark: #059669;
+    --info-color: #22d3ee;
+    --info-dark: #06b6d4;
+    
+    /* Backgrounds */
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --sidebar-bg: #1e293b;
+    
+    /* Text */
+    --text-color: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-light: #64748b;
+    
+    /* Borders */
+    --border-color: #334155;
+    --border-light: #1e293b;
+    
+    /* States */
+    --hover-color: rgba(255, 255, 255, 0.05);
+    --active-color: rgba(255, 255, 255, 0.1);
+    
+    /* RGB values */
+    --primary-rgb: 99, 102, 241;
+    --success-rgb: 16, 185, 129;
+    --danger-rgb: 248, 113, 113;
+}
+
+/* Theme Transition */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme Toggle Animation */
+#themeToggleBtn,
+#mobileThemeToggle {
+    position: relative;
+    overflow: hidden;
+}
+
+#themeToggleBtn i,
+#mobileThemeToggle i {
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+[data-theme="dark"] #themeToggleBtn i,
+[data-theme="dark"] #mobileThemeToggle i {
+    transform: rotate(360deg);
+}
+
+/* Hide Balance Effect */
+.blurred {
+    filter: blur(8px);
+    transition: filter 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Hide Balance Button Animation */
+#hideBalanceBtn,
+#mobileHideBalance {
+    position: relative;
+}
+
+#hideBalanceBtn.active i,
+#mobileHideBalance.active i {
+    animation: eyeBlink 0.6s ease;
+}
+
+@keyframes eyeBlink {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.8);
+        opacity: 0.7;
+    }
+}
+
+/* Theme-specific adjustments */
+[data-theme="dark"] .control-btn,
+[data-theme="dark"] .mobile-control-btn,
+[data-theme="dark"] .btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .control-btn:hover,
+[data-theme="dark"] .mobile-control-btn:hover,
+[data-theme="dark"] .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .chart-card,
+[data-theme="dark"] .summary-card,
+[data-theme="dark"] .recent-transactions,
+[data-theme="dark"] .wallet-card,
+[data-theme="dark"] .wallet-transfer,
+[data-theme="dark"] .report-filters,
+[data-theme="dark"] .modal-content {
+    background: var(--card-bg);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .filter-select,
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea,
+[data-theme="dark"] .date-input {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .filter-select:focus,
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] .form-textarea:focus,
+[data-theme="dark"] .date-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
+}
+
+[data-theme="dark"] .data-table th {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .data-table tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Scrollbar theme adjustments */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Loading animation for dark theme */
+[data-theme="dark"] .loading::after {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.05),
+        transparent
+    );
+}
+
+/* Color options for dark theme */
+[data-theme="dark"] .color-option.selected {
+    border-color: var(--text-color);
+}
+
+/* Modal backdrop for dark theme */
+[data-theme="dark"] .modal {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Mobile menu for dark theme */
+[data-theme="dark"] .mobile-menu {
+    background: var(--card-bg);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .mobile-menu-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .mobile-controls {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Footer for dark theme */
+[data-theme="dark"] .footer {
+    background: var(--card-bg);
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .footer-bottom {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Progress bar for dark theme */
+[data-theme="dark"] .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Badge adjustments for dark theme */
+[data-theme="dark"] .badge.income {
+    background: rgba(var(--success-rgb), 0.15);
+}
+
+[data-theme="dark"] .badge.expense {
+    background: rgba(var(--danger-rgb), 0.15);
+}
+
+/* Type selector for dark theme */
+[data-theme="dark"] .type-btn {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .type-btn.active.income {
+    background: rgba(var(--success-rgb), 0.15);
+}
+
+[data-theme="dark"] .type-btn.active.expense {
+    background: rgba(var(--danger-rgb), 0.15);
+}
+
+/* Date info for dark theme */
+[data-theme="dark"] .date-info {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Wallet type badge for dark theme */
+[data-theme="dark"] .wallet-type {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Chart controls for dark theme */
+[data-theme="dark"] .chart-select {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* View all link for dark theme */
+[data-theme="dark"] .view-all-link {
+    color: var(--primary-light);
+}
+
+/* Pagination for dark theme */
+[data-theme="dark"] .pagination-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Empty state for dark theme */
+[data-theme="dark"] .empty-state {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .empty-state i {
+    opacity: 0.3;
+}
+
+/* Tooltip for dark theme */
+[data-theme="dark"] .tooltip {
+    background: var(--text-color);
+    color: var(--bg-color);
+}
