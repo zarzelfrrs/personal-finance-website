@@ -196,7 +196,7 @@ class UIManager {
             }
         });
 
-        // Custom focus styles
+        // Custom focus styles - HAPUS preventDefault
         document.addEventListener('focusin', (e) => {
             if (e.target.matches('button, a, input, select, textarea')) {
                 e.target.classList.add('custom-focus');
@@ -209,12 +209,12 @@ class UIManager {
             }
         });
 
-        // Prevent blue highlight on tap (mobile)
-        document.addEventListener('touchstart', (e) => {
-            if (!e.target.matches('input, textarea, select')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+        // HAPUS event touchstart yang memblokir interaksi
+        // document.addEventListener('touchstart', (e) => {
+        //     if (!e.target.matches('input, textarea, select')) {
+        //         e.preventDefault(); // INI YANG MEMBUAT TIDAK BISA DIKLIK
+        //     }
+        // }, { passive: false });
 
         // Prevent context menu
         document.addEventListener('contextmenu', (e) => {
@@ -222,6 +222,42 @@ class UIManager {
                 e.preventDefault();
             }
         });
+        
+        // Tambahkan style untuk menghilangkan highlight di mobile
+        const style = document.createElement('style');
+        style.textContent = `
+            /* Hilangkan highlight biru di mobile */
+            * {
+                -webkit-tap-highlight-color: transparent;
+                tap-highlight-color: transparent;
+            }
+            
+            /* Custom focus style untuk semua elemen */
+            .custom-focus {
+                outline: 2px solid var(--primary-color) !important;
+                outline-offset: 2px !important;
+            }
+            
+            /* Hilangkan outline default */
+            button:focus,
+            a:focus,
+            input:focus,
+            select:focus,
+            textarea:focus {
+                outline: none !important;
+            }
+            
+            /* Style untuk mobile touch feedback */
+            button:active,
+            .btn:active,
+            .nav-item:active,
+            .mobile-menu-item:active {
+                opacity: 0.7;
+                transform: scale(0.98);
+                transition: all 0.1s ease;
+            }
+        `;
+        document.head.appendChild(style);
     }
 
     /**
