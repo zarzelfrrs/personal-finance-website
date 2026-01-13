@@ -29,40 +29,65 @@ class WalletManager {
      * Setup event listeners untuk wallet operations
      */
     static setupEventListeners() {
+        console.log('🔗 Setting up wallet event listeners...');
+        
         // Add wallet button
-        document.getElementById('addWalletBtn')?.addEventListener('click', () => {
-            this.openWalletModal();
-        });
+        const addWalletBtn = document.getElementById('addWalletBtn');
+        if (addWalletBtn) {
+            addWalletBtn.addEventListener('click', () => {
+                this.openWalletModal();
+            });
+        }
 
         // Wallet form submission
-        document.getElementById('walletForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleWalletSubmit(e);
-        });
+        const walletForm = document.getElementById('walletForm');
+        if (walletForm) {
+            walletForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleWalletSubmit(e);
+            });
+        }
 
         // Transfer form submission
-        document.getElementById('transferForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleTransferSubmit(e);
-        });
+        const transferForm = document.getElementById('transferForm');
+        if (transferForm) {
+            transferForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleTransferSubmit(e);
+            });
+        }
 
         // Color picker
         this.setupColorPicker();
 
         // Event delegation untuk wallet actions
         document.addEventListener('click', (e) => {
-            // Edit wallet
-            if (e.target.closest('.edit-wallet-btn')) {
-                const walletId = e.target.closest('.edit-wallet-btn').dataset.walletId;
+            console.log('Click event:', e.target);
+            
+            // Edit wallet button
+            const editBtn = e.target.closest('.edit-wallet-btn');
+            if (editBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const walletId = editBtn.dataset.walletId;
+                console.log('Edit wallet clicked:', walletId);
                 this.editWallet(walletId);
+                return;
             }
             
-            // Delete wallet
-            if (e.target.closest('.delete-wallet-btn')) {
-                const walletId = e.target.closest('.delete-wallet-btn').dataset.walletId;
+            // Delete wallet button
+            const deleteBtn = e.target.closest('.delete-wallet-btn');
+            if (deleteBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const walletId = deleteBtn.dataset.walletId;
+                console.log('Delete wallet clicked:', walletId);
                 this.confirmDeleteWallet(walletId);
+                return;
             }
         });
+
+        console.log('✅ Wallet event listeners setup complete');
     }
 
     /**
@@ -76,7 +101,10 @@ class WalletManager {
         ];
         
         const container = document.getElementById('colorPicker');
-        if (!container) return;
+        if (!container) {
+            console.warn('Color picker container not found');
+            return;
+        }
         
         container.innerHTML = colors.map(color => `
             <div class="color-option" data-color="${color}" style="background-color: ${color}"></div>
@@ -94,6 +122,7 @@ class WalletManager {
         // Select first color by default
         if (container.firstChild) {
             container.firstChild.classList.add('selected');
+            document.getElementById('selectedColor').value = container.firstChild.dataset.color;
         }
     }
 
@@ -102,9 +131,16 @@ class WalletManager {
      * @param {Object} walletData - Data wallet untuk edit (optional)
      */
     static openWalletModal(walletData = null) {
+        console.log('Opening wallet modal:', walletData);
+        
         const modal = document.getElementById('walletModal');
         const form = document.getElementById('walletForm');
         const title = document.getElementById('walletModalTitle');
+        
+        if (!modal || !form || !title) {
+            console.error('Wallet modal elements not found');
+            return;
+        }
         
         // Reset form
         form.reset();
@@ -120,17 +156,27 @@ class WalletManager {
             
             // Select color
             const colorPicker = document.getElementById('colorPicker');
-            colorPicker.querySelectorAll('.color-option').forEach(color => {
-                color.classList.remove('selected');
-                if (color.dataset.color === walletData.color) {
-                    color.classList.add('selected');
-                }
-            });
+            if (colorPicker) {
+                colorPicker.querySelectorAll('.color-option').forEach(color => {
+                    color.classList.remove('selected');
+                    if (color.dataset.color === walletData.color) {
+                        color.classList.add('selected');
+                    }
+                });
+            }
         } else {
             // Add mode
             title.textContent = 'Tambah Dompet';
             document.getElementById('walletId').value = '';
             document.getElementById('walletBalance').value = 0;
+            
+            // Reset color selection
+            const colorPicker = document.getElementById('colorPicker');
+            if (colorPicker && colorPicker.firstChild) {
+                colorPicker.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+                colorPicker.firstChild.classList.add('selected');
+                document.getElementById('selectedColor').value = colorPicker.firstChild.dataset.color;
+            }
         }
         
         modal.classList.add('active');
@@ -142,6 +188,8 @@ class WalletManager {
     static handleWalletSubmit(e) {
         e.preventDefault();
         
+        console.log('Handling wallet form submission...');
+        
         const formData = {
             id: document.getElementById('walletId').value || StorageManager.generateId(),
             name: document.getElementById('walletName').value.trim(),
@@ -150,6 +198,8 @@ class WalletManager {
             color: document.getElementById('selectedColor').value,
             createdAt: new Date().toISOString()
         };
+        
+        console.log('Form data:', formData);
         
         // Validation
         if (!formData.name) {
@@ -174,27 +224,34 @@ class WalletManager {
         }
         
         // Save wallet
+        let success = false;
         if (document.getElementById('walletId').value) {
             // Update existing wallet
-            const success = StorageManager.updateWallet(formData.id, formData);
+            console.log('Updating existing wallet:', formData.id);
+            success = StorageManager.updateWallet(formData.id, formData);
             if (success) {
                 this.showSuccess('Dompet berhasil diupdate');
             }
         } else {
             // Add new wallet
-            const success = StorageManager.addWallet(formData);
+            console.log('Adding new wallet');
+            success = StorageManager.addWallet(formData);
             if (success) {
                 this.showSuccess('Dompet berhasil ditambahkan');
             }
         }
         
-        // Update UI
-        this.loadWallets();
-        this.closeModal();
-        
-        // Trigger dashboard update
-        if (typeof window.updateDashboard === 'function') {
-            window.updateDashboard();
+        if (success) {
+            // Update UI
+            this.loadWallets();
+            this.closeModal();
+            
+            // Trigger dashboard update
+            if (typeof window.updateDashboard === 'function') {
+                window.updateDashboard();
+            }
+        } else {
+            this.showError('Gagal menyimpan dompet');
         }
     }
 
@@ -203,9 +260,15 @@ class WalletManager {
      * @param {string} walletId - ID wallet yang akan diedit
      */
     static editWallet(walletId) {
+        console.log('Editing wallet:', walletId);
+        
         const wallet = this.wallets.find(w => w.id === walletId);
         if (wallet) {
+            console.log('Found wallet:', wallet);
             this.openWalletModal(wallet);
+        } else {
+            console.error('Wallet not found:', walletId);
+            this.showError('Dompet tidak ditemukan');
         }
     }
 
@@ -215,7 +278,10 @@ class WalletManager {
      */
     static confirmDeleteWallet(walletId) {
         const wallet = this.wallets.find(w => w.id === walletId);
-        if (!wallet) return;
+        if (!wallet) {
+            this.showError('Dompet tidak ditemukan');
+            return;
+        }
         
         // Check if wallet has transactions
         const transactions = StorageManager.getTransactions();
@@ -234,12 +300,19 @@ class WalletManager {
         const messageElement = document.getElementById('confirmMessage');
         const deleteBtn = document.getElementById('confirmDelete');
         
+        if (!modal || !messageElement || !deleteBtn) {
+            this.showError('Modal konfirmasi tidak ditemukan');
+            return;
+        }
+        
         messageElement.textContent = message;
         
         // Set up delete button
+        const originalOnClick = deleteBtn.onclick;
         deleteBtn.onclick = () => {
             this.deleteWallet(walletId);
             modal.classList.remove('active');
+            deleteBtn.onclick = originalOnClick; // Restore original handler
         };
         
         modal.classList.add('active');
@@ -250,6 +323,8 @@ class WalletManager {
      * @param {string} walletId - ID wallet yang akan dihapus
      */
     static deleteWallet(walletId) {
+        console.log('Deleting wallet:', walletId);
+        
         // Delete related transactions
         const transactions = StorageManager.getTransactions();
         const filteredTransactions = transactions.filter(t => 
@@ -279,10 +354,14 @@ class WalletManager {
     static handleTransferSubmit(e) {
         e.preventDefault();
         
+        console.log('Handling transfer form submission...');
+        
         const fromWalletId = document.getElementById('transferFrom').value;
         const toWalletId = document.getElementById('transferTo').value;
         const amount = parseFloat(document.getElementById('transferAmount').value);
         const note = document.getElementById('transferNote').value.trim();
+        
+        console.log('Transfer data:', { fromWalletId, toWalletId, amount, note });
         
         // Validation
         if (!fromWalletId || !toWalletId) {
@@ -312,6 +391,7 @@ class WalletManager {
         
         if (success) {
             // Create transfer transaction
+            const toWallet = this.wallets.find(w => w.id === toWalletId);
             const transferTransaction = {
                 id: StorageManager.generateId(),
                 type: 'transfer',
@@ -351,88 +431,113 @@ class WalletManager {
      */
     static renderWallets() {
         const container = document.getElementById('walletsGrid');
-        if (!container) return;
+        if (!container) {
+            console.error('Wallets grid container not found');
+            return;
+        }
+        
+        console.log('Rendering wallets:', this.wallets.length);
         
         if (this.wallets.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-wallet"></i>
                     <p>Belum ada dompet</p>
-                    <button class="btn btn-primary" onclick="WalletManager.openWalletModal()">
+                    <button class="btn btn-primary" id="addFirstWalletBtn">
                         <i class="fas fa-plus"></i> Tambah Dompet Pertama
                     </button>
                 </div>
             `;
+            
+            // Add event listener to the button
+            const addFirstWalletBtn = document.getElementById('addFirstWalletBtn');
+            if (addFirstWalletBtn) {
+                addFirstWalletBtn.addEventListener('click', () => {
+                    this.openWalletModal();
+                });
+            }
+            
             return;
         }
         
-        container.innerHTML = this.wallets.map(wallet => `
-            <div class="wallet-card" style="--wallet-color: ${wallet.color}">
-                <div class="wallet-header">
-                    <div class="wallet-name">
-                        <i class="fas ${this.getWalletIcon(wallet.type)}"></i>
-                        <h3>${wallet.name}</h3>
+        container.innerHTML = this.wallets.map(wallet => {
+            const icon = this.getWalletIcon(wallet.type);
+            const typeName = this.getWalletTypeName(wallet.type);
+            const formattedBalance = StorageManager.formatCurrency(wallet.balance);
+            
+            return `
+                <div class="wallet-card" style="--wallet-color: ${wallet.color}">
+                    <div class="wallet-header">
+                        <div class="wallet-name">
+                            <i class="fas ${icon}" style="color: ${wallet.color}"></i>
+                            <h3>${wallet.name}</h3>
+                        </div>
+                        <span class="wallet-type">${typeName}</span>
                     </div>
-                    <span class="wallet-type">${this.getWalletTypeName(wallet.type)}</span>
+                    <div class="wallet-balance" id="wallet-balance-${wallet.id}">
+                        ${formattedBalance}
+                    </div>
+                    <div class="wallet-meta">
+                        <span>Saldo saat ini</span>
+                        <span>${StorageManager.formatShortDate(new Date())}</span>
+                    </div>
+                    <div class="wallet-actions">
+                        <button class="btn btn-secondary btn-sm edit-wallet-btn" 
+                                data-wallet-id="${wallet.id}"
+                                title="Edit dompet">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm delete-wallet-btn" 
+                                data-wallet-id="${wallet.id}"
+                                title="Hapus dompet">
+                            <i class="fas fa-trash"></i> Hapus
+                        </button>
+                    </div>
                 </div>
-                <div class="wallet-balance" id="wallet-balance-${wallet.id}">
-                    ${StorageManager.formatCurrency(wallet.balance)}
-                </div>
-                <div class="wallet-meta">
-                    <span>Saldo saat ini</span>
-                    <span>${StorageManager.formatShortDate(new Date())}</span>
-                </div>
-                <div class="wallet-actions">
-                    <button class="btn btn-secondary btn-sm edit-wallet-btn" data-wallet-id="${wallet.id}">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button class="btn btn-danger btn-sm delete-wallet-btn" data-wallet-id="${wallet.id}">
-                        <i class="fas fa-trash"></i> Hapus
-                    </button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
         
         // Apply blur effect if balance is hidden
         this.updateBalanceBlur();
+        
+        console.log('Wallets rendered successfully');
     }
 
     /**
      * Update wallet selects di semua form
      */
     static updateWalletSelects() {
+        console.log('Updating wallet selects...');
+        
         const selects = [
-            document.getElementById('filterWallet'),
-            document.getElementById('transWallet'),
-            document.getElementById('transferFrom'),
-            document.getElementById('transferTo'),
-            document.getElementById('reportWallet')
+            { id: 'filterWallet', defaultOption: 'Semua Dompet' },
+            { id: 'transWallet', defaultOption: 'Pilih Dompet' },
+            { id: 'transferFrom', defaultOption: 'Pilih Dompet' },
+            { id: 'transferTo', defaultOption: 'Pilih Dompet' },
+            { id: 'reportWallet', defaultOption: 'Semua Dompet' }
         ];
         
-        const options = this.wallets.map(wallet => 
-            `<option value="${wallet.id}">${wallet.name}</option>`
-        ).join('');
-        
-        selects.forEach(select => {
+        selects.forEach(selectInfo => {
+            const select = document.getElementById(selectInfo.id);
             if (select) {
                 const currentValue = select.value;
-                select.innerHTML = '<option value="all">Semua Dompet</option>' + options;
-                select.value = currentValue;
+                const options = this.wallets.map(wallet => 
+                    `<option value="${wallet.id}">${wallet.name}</option>`
+                ).join('');
                 
-                // Reset to "all" if current value is not valid
-                if (!select.querySelector(`option[value="${currentValue}"]`)) {
-                    select.value = 'all';
+                select.innerHTML = `<option value="all">${selectInfo.defaultOption}</option>` + options;
+                
+                // Preserve current value if it exists
+                if (currentValue && select.querySelector(`option[value="${currentValue}"]`)) {
+                    select.value = currentValue;
+                } else if (selectInfo.id === 'transferFrom' && this.wallets.length > 0) {
+                    // Default select first wallet for transfer from
+                    select.value = this.wallets[0].id;
                 }
             }
         });
         
-        // Update transaction wallet select separately
-        const transWalletSelect = document.getElementById('transWallet');
-        if (transWalletSelect) {
-            const currentValue = transWalletSelect.value;
-            transWalletSelect.innerHTML = '<option value="">Pilih Dompet</option>' + options;
-            transWalletSelect.value = currentValue;
-        }
+        console.log('Wallet selects updated');
     }
 
     /**
@@ -441,7 +546,7 @@ class WalletManager {
     static updateBalanceBlur() {
         const isHidden = StorageManager.getHideBalance();
         
-        // Update dashboard balances
+        // Update all balance elements
         const balanceElements = document.querySelectorAll('.balance-amount, .wallet-balance');
         balanceElements.forEach(el => {
             if (isHidden) {
@@ -451,7 +556,15 @@ class WalletManager {
             }
         });
         
-        // Update button state
+        // Update button states
+        this.updateHideBalanceButtons();
+    }
+
+    /**
+     * Update hide balance buttons
+     */
+    static updateHideBalanceButtons() {
+        const isHidden = StorageManager.getHideBalance();
         const hideBtn = document.getElementById('hideBalanceBtn');
         const mobileHideBtn = document.getElementById('mobileHideBalance');
         
@@ -576,5 +689,6 @@ class WalletManager {
 
 // Auto-initialize wallet manager
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing WalletManager...');
     WalletManager.init();
 });
