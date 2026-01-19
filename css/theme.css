@@ -1,0 +1,220 @@
+/* Tema Gelap */
+body.dark-theme {
+    --primary-color: #6b8cff;
+    --primary-dark: #5a7bff;
+    --secondary-color: #8a93a2;
+    --success-color: #2dce89;
+    --danger-color: #f5365c;
+    --warning-color: #fb6340;
+    --info-color: #11cdef;
+    
+    --bg-color: #121826;
+    --card-bg: #1e293b;
+    --text-color: #e2e8f0;
+    --text-light: #94a3b8;
+    --border-color: #2d3748;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --shadow-hover: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* Transisi untuk perubahan tema */
+body, .summary-card, .chart-container, .recent-transactions, 
+.ai-insights, .transactions-table-container, .budget-card,
+.wallet-card, .reports-controls, .report-output,
+.modal-content, .page-actions, .filters {
+    transition: background-color var(--transition-speed),
+                color var(--transition-speed),
+                border-color var(--transition-speed),
+                box-shadow var(--transition-speed);
+}
+
+/* Animasi untuk toggle theme */
+.theme-toggle {
+    transition: transform 0.5s ease;
+}
+
+.theme-toggle.rotate {
+    transform: rotate(360deg);
+}
+
+/* Animasi untuk sidebar */
+.sidebar {
+    transition: transform var(--transition-speed), 
+                width var(--transition-speed),
+                background-color var(--transition-speed);
+}
+
+/* Animasi untuk menu item */
+.nav-item {
+    transition: all 0.3s ease;
+}
+
+/* Animasi untuk cards */
+.summary-card, .chart-container, .recent-transactions,
+.ai-insights, .budget-card, .wallet-card {
+    animation: cardAppear 0.5s ease-out;
+}
+
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animasi untuk transaksi item */
+.transaction-item {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animasi untuk progress bars */
+.progress-fill {
+    transition: width 1s ease-in-out;
+}
+
+/* Animasi untuk tombol */
+.btn-primary, .btn-secondary, .btn-view-all, 
+.btn-refresh, .btn-apply, .btn-reset, .btn-export {
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:active, .btn-secondary:active, .btn-view-all:active,
+.btn-refresh:active, .btn-apply:active, .btn-reset:active, .btn-export:active {
+    transform: scale(0.98);
+}
+
+/* Ripple effect untuk tombol */
+.btn-primary::after, .btn-secondary::after, .btn-view-all::after,
+.btn-refresh::after, .btn-apply::after, .btn-reset::after, .btn-export::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.btn-primary:focus:not(:active)::after, 
+.btn-secondary:focus:not(:active)::after,
+.btn-view-all:focus:not(:active)::after,
+.btn-refresh:focus:not(:active)::after,
+.btn-apply:focus:not(:active)::after,
+.btn-reset:focus:not(:active)::after,
+.btn-export:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(20, 20);
+        opacity: 0;
+    }
+}
+
+/* Animasi untuk form input */
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.2);
+}
+
+/* Animasi untuk loading */
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* Animasi untuk chart update */
+.chart-wrapper canvas {
+    transition: opacity 0.5s ease;
+}
+
+.chart-updating canvas {
+    opacity: 0.7;
+}
+
+/* Animasi untuk filter dropdown */
+.filter-controls select, .filters select, .report-filters select {
+    transition: all 0.2s ease;
+}
+
+.filter-controls select:focus, .filters select:focus, .report-filters select:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Animasi untuk modal */
+.modal-content {
+    animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Animasi untuk transisi halaman */
+.page {
+    animation: pageTransition 0.3s ease-out;
+}
+
+@keyframes pageTransition {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animasi untuk hover efek pada table */
+.transactions-table tr {
+    transition: background-color 0.2s ease;
+}
+
+/* Animasi untuk icon */
+.nav-item i, .card-icon i, .transaction-icon i {
+    transition: transform 0.3s ease;
+}
+
+.nav-item:hover i, .summary-card:hover .card-icon i {
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments untuk tema gelap */
+@media (max-width: 768px) {
+    body.dark-theme .sidebar {
+        background-color: #1a2332;
+    }
+}

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyMaster - Aplikasi Keuangan Pribadi</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header dengan navigasi -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="logo">Money<span>Master</span></h1>
+        </div>
+        
+        <div class="header-right">
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="current-date" id="currentDate"></div>
+        </div>
+    </header>
+
+    <!-- Sidebar menu -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </li>
+            <li class="nav-item" data-page="transactions">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Transaksi</span>
+            </li>
+            <li class="nav-item" data-page="budgets">
+                <i class="fas fa-chart-pie"></i>
+                <span>Budget</span>
+            </li>
+            <li class="nav-item" data-page="reports">
+                <i class="fas fa-file-alt"></i>
+                <span>Laporan</span>
+            </li>
+            <li class="nav-item" data-page="wallets">
+                <i class="fas fa-wallet"></i>
+                <span>Dompet</span>
+            </li>
+        </ul>
+        
+        <div class="user-profile">
+            <div class="profile-img">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-info">
+                <span class="profile-name">Pengguna</span>
+                <span class="profile-email">pengguna@email.com</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content area -->
+    <main class="main-content" id="mainContent">
+        <!-- Dashboard content (default page) -->
+        <section class="page active" id="dashboard">
+            <div class="page-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                <p>Ringkasan keuangan pribadi Anda</p>
+            </div>
+            
+            <!-- Ringkasan utama cards -->
+            <div class="summary-cards" id="summaryCards">
+                <!-- Cards akan diisi dengan JavaScript -->
+            </div>
+            
+            <!-- Charts section -->
+            <div class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Cashflow Bulanan</h3>
+                        <div class="chart-controls">
+                            <button class="btn-chart-type active" data-chart="line">Line</button>
+                            <button class="btn-chart-type" data-chart="bar">Bar</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="cashflowChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Pengeluaran per Kategori</h3>
+                        <div class="chart-controls">
+                            <button class="btn-chart-type active" data-chart="pie">Pie</button>
+                            <button class="btn-chart-type" data-chart="doughnut">Donut</button>
+                            <button class="btn-chart-type" data-chart="bar">Bar</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent transactions & AI insights -->
+            <div class="bottom-section">
+                <div class="recent-transactions">
+                    <div class="section-header">
+                        <h3><i class="fas fa-history"></i> Transaksi Terbaru</h3>
+                        <div class="filter-controls">
+                            <select id="transactionFilter">
+                                <option value="1">24 Jam Terakhir</option>
+                                <option value="7" selected>1 Minggu Terakhir</option>
+                                <option value="30">1 Bulan Terakhir</option>
+                                <option value="365">1 Tahun Terakhir</option>
+                                <option value="all">Semua Waktu</option>
+                            </select>
+                            <button class="btn-view-all" id="viewAllTransactions">Lihat Semua</button>
+                        </div>
+                    </div>
+                    <div class="transactions-list" id="recentTransactions">
+                        <!-- Transaksi akan diisi dengan JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="ai-insights">
+                    <div class="section-header">
+                        <h3><i class="fas fa-robot"></i> AI Insights Keuangan</h3>
+                        <button class="btn-refresh" id="refreshInsights">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="insights-content" id="aiInsights">
+                        <!-- AI insights akan diisi dengan JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Transactions page -->
+        <section class="page" id="transactions">
+            <div class="page-header">
+                <h2><i class="fas fa-exchange-alt"></i> Transaksi</h2>
+                <p>Kelola semua transaksi keuangan Anda</p>
+            </div>
+            
+            <div class="page-actions">
+                <button class="btn-primary" id="addTransactionBtn">
+                    <i class="fas fa-plus"></i> Tambah Transaksi
+                </button>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="filterType">Tipe:</label>
+                        <select id="filterType">
+                            <option value="all">Semua</option>
+                            <option value="income">Pemasukan</option>
+                            <option value="expense">Pengeluaran</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterCategory">Kategori:</label>
+                        <select id="filterCategory">
+                            <!-- Kategori akan diisi dengan JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterWallet">Dompet:</label>
+                        <select id="filterWallet">
+                            <!-- Dompet akan diisi dengan JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterPeriod">Periode:</label>
+                        <select id="filterPeriod">
+                            <option value="all">Semua Waktu</option>
+                            <option value="today">Hari Ini</option>
+                            <option value="week">Minggu Ini</option>
+                            <option value="month">Bulan Ini</option>
+                            <option value="year">Tahun Ini</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn-apply" id="applyFilters">Terapkan Filter</button>
+                    <button class="btn-reset" id="resetFilters">Reset</button>
+                </div>
+            </div>
+            
+            <div class="transactions-table-container">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Deskripsi</th>
+                            <th>Kategori</th>
+                            <th>Tipe</th>
+                            <th>Dompet</th>
+                            <th>Jumlah</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTableBody">
+                        <!-- Data transaksi akan diisi dengan JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Budgets page -->
+        <section class="page" id="budgets">
+            <div class="page-header">
+                <h2><i class="fas fa-chart-pie"></i> Budget</h2>
+                <p>Kelola anggaran pengeluaran per kategori</p>
+            </div>
+            
+            <div class="page-actions">
+                <button class="btn-primary" id="addBudgetBtn">
+                    <i class="fas fa-plus"></i> Tambah Budget
+                </button>
+            </div>
+            
+            <div class="budgets-container" id="budgetsContainer">
+                <!-- Budget cards akan diisi dengan JavaScript -->
+            </div>
+        </section>
+        
+        <!-- Reports page -->
+        <section class="page" id="reports">
+            <div class="page-header">
+                <h2><i class="fas fa-file-alt"></i> Laporan</h2>
+                <p>Buat dan ekspor laporan keuangan</p>
+            </div>
+            
+            <div class="reports-controls">
+                <div class="report-filters">
+                    <div class="filter-group">
+                        <label for="reportPeriod">Periode Laporan:</label>
+                        <select id="reportPeriod">
+                            <option value="daily">Harian</option>
+                            <option value="weekly" selected>Mingguan</option>
+                            <option value="monthly">Bulanan</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" id="customDateRange" style="display: none;">
+                        <label for="startDate">Dari:</label>
+                        <input type="date" id="startDate">
+                        
+                        <label for="endDate">Sampai:</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="reportMonth">Bulan:</label>
+                        <select id="reportMonth">
+                            <!-- Opsi bulan akan diisi dengan JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="reportCategory">Kategori:</label>
+                        <select id="reportCategory">
+                            <!-- Kategori akan diisi dengan JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <button class="btn-primary" id="generateReport">
+                        <i class="fas fa-chart-bar"></i> Generate Laporan
+                    </button>
+                </div>
+            </div>
+            
+            <div class="report-output">
+                <div class="report-header">
+                    <h3 id="reportTitle">Laporan Keuangan</h3>
+                    <div class="report-actions">
+                        <button class="btn-export" id="exportPDF">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                        <button class="btn-export" id="exportExcel">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="report-content" id="reportContent">
+                    <!-- Konten laporan akan diisi dengan JavaScript -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Wallets page -->
+        <section class="page" id="wallets">
+            <div class="page-header">
+                <h2><i class="fas fa-wallet"></i> Dompet</h2>
+                <p>Kelola semua dompet dan transfer antar dompet</p>
+            </div>
+            
+            <div class="page-actions">
+                <button class="btn-primary" id="addWalletBtn">
+                    <i class="fas fa-plus"></i> Tambah Dompet
+                </button>
+                <button class="btn-secondary" id="transferFundsBtn">
+                    <i class="fas fa-exchange-alt"></i> Transfer Dana
+                </button>
+            </div>
+            
+            <div class="wallets-container" id="walletsContainer">
+                <!-- Wallet cards akan diisi dengan JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <!-- Modal untuk tambah/edit transaksi -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTransactionTitle">Tambah Transaksi Baru</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <div class="form-group">
+                        <label for="transDescription">Deskripsi *</label>
+                        <input type="text" id="transDescription" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="transAmount">Jumlah (Rp) *</label>
+                            <input type="number" id="transAmount" min="0" step="1000" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transType">Tipe *</label>
+                            <select id="transType" required>
+                                <option value="income">Pemasukan</option>
+                                <option value="expense">Pengeluaran</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="transCategory">Kategori *</label>
+                            <select id="transCategory" required>
+                                <!-- Kategori akan diisi dengan JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transWallet">Dompet *</label>
+                            <select id="transWallet" required>
+                                <!-- Dompet akan diisi dengan JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transDate">Tanggal *</label>
+                        <input type="date" id="transDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transNotes">Catatan (opsional)</label>
+                        <textarea id="transNotes" rows="3"></textarea>
+                    </div>
+                    
+                    <input type="hidden" id="transId">
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel close-modal">Batal</button>
+                        <button type="submit" class="btn-primary" id="saveTransaction">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal untuk tambah/edit budget -->
+    <div class="modal" id="budgetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalBudgetTitle">Tambah Budget Baru</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="budgetForm">
+                    <div class="form-group">
+                        <label for="budgetCategory">Kategori *</label>
+                        <select id="budgetCategory" required>
+                            <!-- Kategori pengeluaran akan diisi dengan JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="budgetAmount">Jumlah Budget (Rp) *</label>
+                        <input type="number" id="budgetAmount" min="0" step="10000" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="budgetMonth">Bulan *</label>
+                        <select id="budgetMonth" required>
+                            <!-- Opsi bulan akan diisi dengan JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="budgetYear">Tahun *</label>
+                        <select id="budgetYear" required>
+                            <!-- Opsi tahun akan diisi dengan JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <input type="hidden" id="budgetId">
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel close-modal">Batal</button>
+                        <button type="submit" class="btn-primary" id="saveBudget">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal untuk tambah/edit dompet -->
+    <div class="modal" id="walletModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalWalletTitle">Tambah Dompet Baru</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="walletForm">
+                    <div class="form-group">
+                        <label for="walletName">Nama Dompet *</label>
+                        <input type="text" id="walletName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="walletType">Tipe Dompet</label>
+                        <select id="walletType">
+                            <option value="cash">Tunai</option>
+                            <option value="bank">Rekening Bank</option>
+                            <option value="digital">Dompet Digital</option>
+                            <option value="savings">Tabungan</option>
+                            <option value="other">Lainnya</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="walletBalance">Saldo Awal (Rp)</label>
+                        <input type="number" id="walletBalance" min="0" step="1000" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="walletColor">Warna</label>
+                        <input type="color" id="walletColor" value="#4a6bff">
+                    </div>
+                    
+                    <input type="hidden" id="walletId">
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel close-modal">Batal</button>
+                        <button type="submit" class="btn-primary" id="saveWallet">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal untuk transfer dana -->
+    <div class="modal" id="transferModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Transfer Dana Antar Dompet</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="transferForm">
+                    <div class="form-group">
+                        <label for="fromWallet">Dari Dompet *</label>
+                        <select id="fromWallet" required>
+                            <!-- Dompet sumber akan diisi dengan JavaScript -->
+                        </select>
+                        <div class="wallet-balance" id="fromWalletBalance"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="toWallet">Ke Dompet *</label>
+                        <select id="toWallet" required>
+                            <!-- Dompet tujuan akan diisi dengan JavaScript -->
+                        </select>
+                        <div class="wallet-balance" id="toWalletBalance"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transferAmount">Jumlah Transfer (Rp) *</label>
+                        <input type="number" id="transferAmount" min="0" step="1000" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transferDate">Tanggal Transfer *</label>
+                        <input type="date" id="transferDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transferNotes">Catatan (opsional)</label>
+                        <textarea id="transferNotes" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel close-modal">Batal</button>
+                        <button type="submit" class="btn-primary" id="saveTransfer">Transfer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Memuat data...</p>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/transactions.js"></script>
+    <script src="js/budgets.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/wallets.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/ai-insights.js"></script>
+
+    <!-- Overlay untuk sidebar di mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<script>
+// Perbaikan inisialisasi aplikasi
+document.addEventListener('DOMContentLoaded', function() {
+    // Sembunyikan loading overlay setelah semua dimuat
+    setTimeout(() => {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('hidden');
+        }
+    }, 500);
+    
+    // Inisialisasi data di localStorage jika belum ada
+    initLocalStorage();
+    
+    // Inisialisasi elemen UI
+    initUI();
+    
+    // Inisialisasi event listeners
+    initEventListeners();
+    
+    // Tampilkan halaman dashboard sebagai default
+    showPage('dashboard');
+    
+    // Update tanggal saat ini
+    updateCurrentDate();
+    
+    console.log('Aplikasi MoneyMaster berhasil diinisialisasi!');
+});
+
+// Perbaikan toggle sidebar untuk mobile
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        
+        // Tutup overlay saat diklik
+        if (overlay.classList.contains('show')) {
+            overlay.addEventListener('click', function closeSidebar() {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                overlay.removeEventListener('click', closeSidebar);
+            });
+        }
+    } else {
+        sidebar.classList.toggle('collapsed');
+        const mainContent = document.getElementById('mainContent');
+        if (sidebar.classList.contains('collapsed')) {
+            mainContent.style.marginLeft = '0';
+        } else {
+            mainContent.style.marginLeft = 'var(--sidebar-width)';
+        }
+    }
+}
+
+// Perbaikan untuk update real-time
+function updateRealTimeData() {
+    try {
+        // Update dashboard jika sedang ditampilkan
+        if (document.getElementById('dashboard').classList.contains('active')) {
+            updateSummaryCards();
+            
+            // Update charts
+            if (typeof updateCashflowChart === 'function') {
+                const activeCashflowBtn = document.querySelector('#cashflowChart').closest('.chart-container')
+                    .querySelector('.btn-chart-type.active');
+                const cashflowType = activeCashflowBtn ? activeCashflowBtn.getAttribute('data-chart') : 'line';
+                updateCashflowChart(cashflowType);
+            }
+            
+            if (typeof updateExpenseChart === 'function') {
+                const activeExpenseBtn = document.querySelector('#expenseChart').closest('.chart-container')
+                    .querySelector('.btn-chart-type.active');
+                const expenseType = activeExpenseBtn ? activeExpenseBtn.getAttribute('data-chart') : 'doughnut';
+                updateExpenseChart(expenseType);
+            }
+            
+            updateRecentTransactions();
+            
+            // Pastikan updateAIInsights tersedia
+            if (typeof updateAIInsights === 'function') {
+                updateAIInsights();
+            }
+        }
+        
+        // Update tanggal
+        updateCurrentDate();
+        
+    } catch (error) {
+        console.error('Error updating real-time data:', error);
+    }
+}
+</script>
+</body>
+</html>
